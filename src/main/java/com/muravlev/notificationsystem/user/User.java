@@ -1,9 +1,12 @@
 package com.muravlev.notificationsystem.user;
 
+import com.muravlev.notificationsystem.channel.Channel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,7 +20,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer id;
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -28,6 +31,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @ManyToMany(mappedBy = "subscribers")
+    private List<Channel> subscribedChannels = new ArrayList<>();
+
 
 
     @Override
@@ -35,7 +41,7 @@ public class User {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         User user = (User) o;
-        return Id != null && Objects.equals(Id, user.Id);
+        return id != null && Objects.equals(id, user.id);
     }
 
     @Override
