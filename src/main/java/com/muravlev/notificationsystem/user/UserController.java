@@ -44,12 +44,16 @@ public class UserController {
         userService.deleteUser(id);
     }
 
+    //    @PostMapping("/login")
+//    public ResponseEntity<?> authenticate(@RequestBody User user) throws Exception {
+//        if (userService.authenticate(user.getUserName(), user.getPassword())) {
+//            return ResponseEntity.ok("Успешная аутентификация");
+//        } else {
+//            throw new Exception("Incorrect username or password");
+//        }
+//    }
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody User user) throws Exception {
-        if (userService.authenticate(user.getUserName(), user.getPassword())) {
-            return ResponseEntity.ok("Успешная аутентификация");
-        } else {
-            throw new Exception("Incorrect username or password");
-        }
+        return userService.authenticate(user.getUserName(), user.getPassword());
     }
 }

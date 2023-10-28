@@ -1,5 +1,6 @@
 package com.muravlev.notificationsystem.channel;
 
+import com.muravlev.notificationsystem.config.JwtUtil;
 import com.muravlev.notificationsystem.user.User;
 import com.muravlev.notificationsystem.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,14 +17,21 @@ public class ChannelService {
 
     private final ChannelRepository channelRepository;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public ChannelService(ChannelRepository channelRepository, UserRepository userRepository) {
+    public ChannelService(ChannelRepository channelRepository, UserRepository userRepository, JwtUtil jwtUtil) {
         this.channelRepository = channelRepository;
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
-    public Channel createChannel(Channel channel) {
+    public Channel createChannel(Channel channel, String jwtToken) {
+        Integer userId = jwtUtil.getUserIdFromToken(jwtToken);
+
+        User author = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+        channel.setCreator(author);
         if (channel.getChannelName() == null || channel.getChannelName().trim().isEmpty()) {
             throw new IllegalArgumentException("Channel name is empty");
         }
@@ -33,8 +41,7 @@ public class ChannelService {
         if (channel.getCreator() == null || channel.getCreator().getId() == null) {
             throw new IllegalArgumentException("Channel creator is empty");
         }
-        User author = userRepository.findById(channel.getCreator().getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + channel.getCreator().getId()));
+
         channel.setCreator(author);
         return channelRepository.save(channel);
     }

@@ -1,6 +1,8 @@
 package com.muravlev.notificationsystem.user;
 
+import com.muravlev.notificationsystem.config.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +15,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -53,9 +57,22 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public boolean authenticate(String username, String password) {
+//    public boolean authenticate(String username, String password) {
+//        User user = userRepository.findByUserName(username)
+//                .orElseThrow(EntityNotFoundException::new);
+//        return user != null && passwordEncoder.matches(password, user.getPassword());
+//    }
+
+    public ResponseEntity<?> authenticate(String username, String password) throws Exception {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(EntityNotFoundException::new);
-        return user != null && passwordEncoder.matches(password, user.getPassword());
+
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            String token = jwtUtil.generateToken(user);
+            System.out.println(token + "-------------------------------------------------");
+            return ResponseEntity.ok(token);
+        } else {
+            throw new Exception("Incorrect username or password");
+        }
     }
 }

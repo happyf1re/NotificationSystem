@@ -17,9 +17,18 @@ public class ChannelController {
         this.channelService = channelService;
     }
 
+//    @PostMapping("/create")
+//    public ResponseEntity<Channel> createChannel(@RequestBody Channel channel) {
+//        Channel newChannel = channelService.createChannel(channel);
+//        return new ResponseEntity<>(newChannel, HttpStatus.CREATED);
+//    }
+
     @PostMapping("/create")
-    public ResponseEntity<Channel> createChannel(@RequestBody Channel channel) {
-        Channel newChannel = channelService.createChannel(channel);
+    public ResponseEntity<Channel> createChannel(
+            @RequestBody Channel channel,
+            @RequestHeader("Authorization") String jwtToken
+    ) {
+        Channel newChannel = channelService.createChannel(channel, jwtToken.replace("Bearer ", ""));
         return new ResponseEntity<>(newChannel, HttpStatus.CREATED);
     }
 
