@@ -1,8 +1,8 @@
 package com.muravlev.notificationsystem.user;
 
+import com.muravlev.notificationsystem.config.AuthenticationResponse;
 import com.muravlev.notificationsystem.config.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,14 +63,25 @@ public class UserService {
 //        return user != null && passwordEncoder.matches(password, user.getPassword());
 //    }
 
-    public ResponseEntity<?> authenticate(String username, String password) throws Exception {
+//    public ResponseEntity<?> authenticate(String username, String password) throws Exception {
+//        User user = userRepository.findByUserName(username)
+//                .orElseThrow(EntityNotFoundException::new);
+//
+//        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+//            String token = jwtUtil.generateToken(user);
+//            return ResponseEntity.ok(token);
+//        } else {
+//            throw new Exception("Incorrect username or password");
+//        }
+//    }
+
+    public AuthenticationResponse authenticate(String username, String password) throws Exception {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(EntityNotFoundException::new);
 
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             String token = jwtUtil.generateToken(user);
-            System.out.println(token + "-------------------------------------------------");
-            return ResponseEntity.ok(token);
+            return new AuthenticationResponse(token, user.getId());
         } else {
             throw new Exception("Incorrect username or password");
         }

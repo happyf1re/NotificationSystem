@@ -26,11 +26,11 @@ public class Post {
     @Column(name = "created_at")
     private LocalDateTime creationTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
     private User author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "channel_id", referencedColumnName = "id", nullable = false)
     private Channel channel;
 }

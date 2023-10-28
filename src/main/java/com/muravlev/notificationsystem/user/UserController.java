@@ -1,5 +1,6 @@
 package com.muravlev.notificationsystem.user;
 
+import com.muravlev.notificationsystem.config.AuthenticationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,8 +53,13 @@ public class UserController {
 //            throw new Exception("Incorrect username or password");
 //        }
 //    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> authenticate(@RequestBody User user) throws Exception {
+//        return userService.authenticate(user.getUserName(), user.getPassword());
+//    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody User user) throws Exception {
-        return userService.authenticate(user.getUserName(), user.getPassword());
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody User user) throws Exception {
+        return ResponseEntity.ok(userService.authenticate(user.getUserName(), user.getPassword()));
     }
 }
