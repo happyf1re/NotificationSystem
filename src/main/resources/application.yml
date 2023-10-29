@@ -15,3 +15,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 jwt:
   secret: 8SI96vZ/O0rHTVojpn2faer67NkdYrxfdes8VL11UcU=
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          socket: DEBUG
+        messaging: DEBUG

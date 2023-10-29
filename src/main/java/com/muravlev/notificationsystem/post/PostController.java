@@ -17,7 +17,7 @@ public class PostController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Post> createChannel(
+    public ResponseEntity<Post> createPost(
             @RequestBody Post post,
             @RequestHeader("Authorization") String jwtToken
     ) {

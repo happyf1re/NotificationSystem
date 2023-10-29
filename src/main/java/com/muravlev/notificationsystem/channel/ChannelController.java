@@ -38,8 +38,9 @@ public class ChannelController {
     }
 
     @GetMapping("/all")
-    public List<Channel> getAllChannels() {
-        return channelService.findAllChannels();
+    public List<Channel> getAllChannels(@RequestHeader("Authorization") String jwtToken) {
+        jwtToken = jwtToken.replace("Bearer ", "");
+        return channelService.findAllChannels(jwtToken);
     }
 
     @GetMapping("/public")

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,9 +79,29 @@ public class ChannelService {
         return channelRepository.findById(id);
     }
 
-    public List<Channel> findAllChannels() {
-        return channelRepository.findAll();
+    public List<Channel> findAllChannels(String jwtToken) {
+        // Извлекаем ID пользователя из JWT токена
+        Integer currentUserId = jwtUtil.getUserIdFromToken(jwtToken);
+
+        // Получаем все публичные каналы
+        List<Channel> publicChannels = channelRepository.findAllByChannelType(ChannelType.PUBLIC);
+
+        // Получаем приватные каналы, созданные текущим пользователем
+        List<Channel> privateChannelsCreatedByUser = channelRepository.findAllByChannelTypeAndCreatorId(ChannelType.PRIVATE, currentUserId);
+
+        // Получаем приватные каналы, на которые подписан текущий пользователь
+        List<Channel> privateChannelsSubscribedByUser = channelRepository.findAllByChannelTypeAndSubscribersId(ChannelType.PRIVATE, currentUserId);
+
+        // Объединяем списки
+        List<Channel> allChannels = new ArrayList<>();
+        allChannels.addAll(publicChannels);
+        allChannels.addAll(privateChannelsCreatedByUser);
+        allChannels.addAll(privateChannelsSubscribedByUser);
+
+        return allChannels;
     }
+
+
 
     public List<Channel> findPublicChannels() {
         return channelRepository.findAllByChannelType(ChannelType.PUBLIC);

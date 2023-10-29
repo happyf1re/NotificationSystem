@@ -6,6 +6,9 @@ import com.muravlev.notificationsystem.config.JwtUtil;
 import com.muravlev.notificationsystem.user.User;
 import com.muravlev.notificationsystem.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +23,19 @@ public class PostService {
     private final ChannelRepository channelRepository;
     private final JwtUtil jwtUtil;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, ChannelRepository channelRepository, JwtUtil jwtUtil) {
+    private final SimpMessagingTemplate template;
+
+    public PostService(PostRepository postRepository, UserRepository userRepository, ChannelRepository channelRepository, JwtUtil jwtUtil, SimpMessagingTemplate template) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.channelRepository = channelRepository;
         this.jwtUtil = jwtUtil;
+        this.template = template;
     }
 
     @Transactional
+    @MessageMapping("/newPost")
+    @SendTo("/topic/posts")
     public Post createPost(Post post, String jwtToken) {
         Integer userId = jwtUtil.getUserIdFromToken(jwtToken);
         if (post.getContent() == null || post.getContent().trim().isEmpty()) {
@@ -47,8 +55,11 @@ public class PostService {
         post.setChannel(channel);
         post.setCreationTime(LocalDateTime.now());
 
+        Post savedPost = postRepository.save(post);
+        template.convertAndSend("/topic/posts", savedPost);
+
         // Сохранение поста в базе данных
-        return postRepository.save(post);
+        return savedPost;
     }
 
     public Post getPostById(Integer id) {

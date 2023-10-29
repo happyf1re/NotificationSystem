@@ -8,4 +8,8 @@ import java.util.List;
 @Repository
 public interface ChannelRepository extends JpaRepository<Channel, Integer> {
     List<Channel> findAllByChannelType(ChannelType type);
+
+    List<Channel> findAllByChannelTypeAndCreatorId(ChannelType aPrivate, Integer currentUserId);
+
+    List<Channel> findAllByChannelTypeAndSubscribersId(ChannelType aPrivate, Integer currentUserId);
 }
