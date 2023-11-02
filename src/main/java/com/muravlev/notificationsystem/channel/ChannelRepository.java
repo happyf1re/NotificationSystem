@@ -12,4 +12,6 @@ public interface ChannelRepository extends JpaRepository<Channel, Integer> {
     List<Channel> findAllByChannelTypeAndCreatorId(ChannelType aPrivate, Integer currentUserId);
 
     List<Channel> findAllByChannelTypeAndSubscribersId(ChannelType aPrivate, Integer currentUserId);
+
+    List<Channel> findAllBySubscribersId(Integer currentUserId);
 }

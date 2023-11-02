@@ -17,12 +17,6 @@ public class ChannelController {
         this.channelService = channelService;
     }
 
-//    @PostMapping("/create")
-//    public ResponseEntity<Channel> createChannel(@RequestBody Channel channel) {
-//        Channel newChannel = channelService.createChannel(channel);
-//        return new ResponseEntity<>(newChannel, HttpStatus.CREATED);
-//    }
-
     @PostMapping("/create")
     public ResponseEntity<Channel> createChannel(
             @RequestBody Channel channel,
@@ -53,6 +47,12 @@ public class ChannelController {
         return channelService.findPrivateChannels();
     }
 
+    @GetMapping("/subscriptions")
+    public List<Channel> getSubscribedChannels(@RequestHeader("Authorization") String jwtToken) {
+        jwtToken = jwtToken.replace("Bearer ", "");
+        return channelService.findSubscribedChannels(jwtToken);
+    }
+
     @PutMapping("/{id}")
     public Channel updateChannel(@RequestBody Channel channel) {
         return channelService.updateChannel(channel);
@@ -63,5 +63,16 @@ public class ChannelController {
         channelService.deleteChannel(id);
     }
 
+    @PostMapping("/{channelId}/subscribe/{userId}")
+    public ResponseEntity<Void> subscribe(@PathVariable Integer userId, @PathVariable Integer channelId){
+        channelService.subscribe(userId, channelId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{channelId}/unsubscribe/{userId}")
+    public ResponseEntity<Void> unsubscribe(@PathVariable Integer userId, @PathVariable Integer channelId){
+        channelService.unsubscribe(userId, channelId);
+        return ResponseEntity.ok().build();
+    }
 
 }

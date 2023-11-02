@@ -1,5 +1,6 @@
 package com.muravlev.notificationsystem.channel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.muravlev.notificationsystem.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,10 +32,12 @@ public class Channel {
     private User creator;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(
             name = "channel_subscribers",
             joinColumns = @JoinColumn(name = "channel_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @ToString.Exclude
     private List<User> subscribers = new ArrayList<>();
 }

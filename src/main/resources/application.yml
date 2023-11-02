@@ -22,3 +22,5 @@ logging:
         web:
           socket: DEBUG
         messaging: DEBUG
+api:
+  key: 29b420e9-0c27-4a41-8e2d-51587f8e8755

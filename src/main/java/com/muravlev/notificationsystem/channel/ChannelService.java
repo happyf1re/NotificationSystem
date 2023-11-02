@@ -101,13 +101,45 @@ public class ChannelService {
         return allChannels;
     }
 
-
-
     public List<Channel> findPublicChannels() {
         return channelRepository.findAllByChannelType(ChannelType.PUBLIC);
     }
 
     public List<Channel> findPrivateChannels() {
         return channelRepository.findAllByChannelType(ChannelType.PRIVATE);
+    }
+
+    public List<Channel> findSubscribedChannels(String jwtToken) {
+        Integer currentUserId = jwtUtil.getUserIdFromToken(jwtToken);
+
+        // Получаем каналы, на которые подписан текущий пользователь
+        return channelRepository.findAllBySubscribersId(currentUserId);
+    }
+
+    @Transactional
+    public void subscribe(Integer userId, Integer channelId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No such user"));
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new EntityNotFoundException("No such channel"));
+        user.getSubscribedChannels().add(channel);
+        if (channel.getSubscribers().contains(user)) {
+            throw new IllegalArgumentException("User is already subscribed to this channel");
+        }
+        channel.getSubscribers().add(user);
+        userRepository.save(user);
+        channelRepository.save(channel);
+    }
+
+    @Transactional
+    public void unsubscribe(Integer userId, Integer channelId) {
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new EntityNotFoundException("No such channel"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No such user"));
+        channel.getSubscribers().remove(user);
+        user.getSubscribedChannels().remove(channel);
+        userRepository.save(user);
+        channelRepository.save(channel);
     }
 }

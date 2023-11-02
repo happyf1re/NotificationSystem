@@ -57,24 +57,6 @@ public class UserService {
         userRepository.delete(user);
     }
 
-//    public boolean authenticate(String username, String password) {
-//        User user = userRepository.findByUserName(username)
-//                .orElseThrow(EntityNotFoundException::new);
-//        return user != null && passwordEncoder.matches(password, user.getPassword());
-//    }
-
-//    public ResponseEntity<?> authenticate(String username, String password) throws Exception {
-//        User user = userRepository.findByUserName(username)
-//                .orElseThrow(EntityNotFoundException::new);
-//
-//        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-//            String token = jwtUtil.generateToken(user);
-//            return ResponseEntity.ok(token);
-//        } else {
-//            throw new Exception("Incorrect username or password");
-//        }
-//    }
-
     public AuthenticationResponse authenticate(String username, String password) throws Exception {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(EntityNotFoundException::new);

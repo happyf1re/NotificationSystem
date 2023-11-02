@@ -1,5 +1,6 @@
 package com.muravlev.notificationsystem.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.muravlev.notificationsystem.channel.Channel;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,8 @@ public class User {
     private String email;
 
     @ManyToMany(mappedBy = "subscribers")
+    @JsonIgnore
+    @ToString.Exclude
     private List<Channel> subscribedChannels = new ArrayList<>();
 
 
